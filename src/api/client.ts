@@ -1,25 +1,4 @@
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim() || 'https://harf.roshan-ai.ir/api'
-
-const API_TOKEN = (import.meta.env.VITE_API_TOKEN as string | undefined)?.trim() || ''
-
-const API_AUTH_HEADER =
-  (import.meta.env.VITE_API_AUTH_HEADER as string | undefined)?.trim() || ''
-
-function getAuthorizationValue(): string {
-  if (API_AUTH_HEADER.length > 0) {
-    return API_AUTH_HEADER
-  }
-
-  if (API_TOKEN.length === 0) {
-    return ''
-  }
-
-  if (API_TOKEN.startsWith('Bearer ') || API_TOKEN.startsWith('Token ')) {
-    return API_TOKEN
-  }
-
-  return `Bearer ${API_TOKEN}`
-}
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim() || 'http://localhost:3000'
 
 function extractApiError(payload: unknown): string {
   if (payload && typeof payload === 'object') {
@@ -43,12 +22,7 @@ function extractApiError(payload: unknown): string {
 
 export async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers)
-  const authValue = getAuthorizationValue()
   const isFormDataBody = typeof FormData !== 'undefined' && init.body instanceof FormData
-
-  if (authValue.length > 0 && !headers.has('Authorization')) {
-    headers.set('Authorization', authValue)
-  }
 
   if (!headers.has('Content-Type') && init.body && !isFormDataBody) {
     headers.set('Content-Type', 'application/json')
@@ -69,6 +43,10 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
 
   if (!response.ok) {
     throw new Error(extractApiError(payload))
+  }
+
+  if (payload && typeof payload === 'object' && 'data' in payload) {
+    return (payload as { data: T }).data
   }
 
   return payload as T

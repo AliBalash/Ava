@@ -32,7 +32,7 @@ function mergeUniqueById(
   primary: ArchiveRequestItem[],
   secondary: ArchiveRequestItem[]
 ): ArchiveRequestItem[] {
-  const map = new Map<number, ArchiveRequestItem>()
+  const map = new Map<string, ArchiveRequestItem>()
 
   for (const item of primary) {
     map.set(item.id, item)
@@ -53,12 +53,12 @@ type ArchiveState = {
   status: 'idle' | 'loading' | 'succeeded' | 'failed'
   error: string | null
   query: string
-  expandedRequestId: number | null
+  expandedRequestId: string | null
   transcriptView: TranscriptView
-  details: Record<number, ArchiveRequestItem>
-  detailStatus: Record<number, 'idle' | 'loading' | 'succeeded' | 'failed'>
-  deletingIds: number[]
-  pendingRemovals: Record<number, PendingRemovalItem>
+  details: Record<string, ArchiveRequestItem>
+  detailStatus: Record<string, 'idle' | 'loading' | 'succeeded' | 'failed'>
+  deletingIds: string[]
+  pendingRemovals: Record<string, PendingRemovalItem>
 }
 
 const initialState: ArchiveState = {
@@ -109,7 +109,7 @@ export const searchArchiveRequests = createAsyncThunk<
 
 export const loadArchiveRequestDetail = createAsyncThunk<
   ArchiveRequestItem,
-  number,
+  string,
   { rejectValue: string }
 >('archive/loadRequestDetail', async (requestId, { rejectWithValue }) => {
   try {
@@ -120,7 +120,7 @@ export const loadArchiveRequestDetail = createAsyncThunk<
   }
 })
 
-export const removeArchiveRequest = createAsyncThunk<number, number, { rejectValue: string }>(
+export const removeArchiveRequest = createAsyncThunk<string, string, { rejectValue: string }>(
   'archive/removeRequest',
   async (requestId, { rejectWithValue }) => {
     try {
@@ -140,7 +140,7 @@ const archiveSlice = createSlice({
     setArchiveQuery(state, action: PayloadAction<string>) {
       state.query = action.payload
     },
-    setExpandedRequestId(state, action: PayloadAction<number | null>) {
+    setExpandedRequestId(state, action: PayloadAction<string | null>) {
       state.expandedRequestId = action.payload
     },
     setArchiveTranscriptView(state, action: PayloadAction<TranscriptView>) {

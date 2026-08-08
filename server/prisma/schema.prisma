@@ -1,0 +1,31 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+
+enum TranscriptionStatus { pending processing completed failed }
+
+model User {
+  id String @id @default(uuid()) @db.Uuid
+  email String @unique
+  name String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  transcriptions Transcription[]
+}
+
+model Transcription {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fileName String
+  originalFileName String
+  sourceUrl String?
+  status TranscriptionStatus @default(pending)
+  text String?
+  segments Json?
+  language String @db.VarChar(8)
+  duration String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([userId, createdAt])
+  @@index([status])
+}

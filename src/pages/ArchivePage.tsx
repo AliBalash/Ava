@@ -82,7 +82,7 @@ export function ArchivePage() {
     dispatch(setExpandedRequestId(null))
   }
 
-  const onToggleExpand = (requestId: number) => {
+  const onToggleExpand = (requestId: string) => {
     const nextValue = expandedRequestId === requestId ? null : requestId
     dispatch(setExpandedRequestId(nextValue))
 

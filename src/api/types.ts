@@ -5,7 +5,7 @@ export type TranscriptionSegment = {
 }
 
 export type ArchiveRequestItem = {
-  id: number
+  id: string
   filename: string
   media_url: string
   url?: string
